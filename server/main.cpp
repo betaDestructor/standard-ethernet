@@ -1,8 +1,17 @@
+/*
+*---------------------------------------------------------------------------------------------------------------
+*	Author	: P Punyacharan, 18-August-2021
+*	Email	: punyacharan@gmail.com
+*	Licence	: GPL-2.0 License
+*	Purpose	: To read the incoming binary coded frame and decode it into various elements of the ethernet frame
+*---------------------------------------------------------------------------------------------------------------
+*/
 #include "FrameDecode.h"
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #define MAX_FRAME_SIZE 1519
+#define MIN_FRAME_SIZE 512
 using namespace std;
 
 int main() {
@@ -15,34 +24,32 @@ int main() {
     // Creating the named file(FIFO)
     // mkfifo(<pathname>,<permission>)
     mkfifo(myfifo, 0666);
+
     char *binaryPayloadCharArray = (char *) calloc (MAX_FRAME_SIZE, sizeof(char));
-    char str1[MAX_FRAME_SIZE], str2[80];
-    // while (1)
-    {
-        // First open in read only and read
-        fd1 = open(myfifo,O_RDONLY);
-        read(fd1, binaryPayloadCharArray, MAX_FRAME_SIZE);
 
-        // Print the read string and close
-        // printf("User1: %s\n", str1);
-        // close(fd1);
+    // Open FIFO file in read only and read.
+    fd1 = open(myfifo,O_RDONLY);
 
-        // Now open in write mode and write
-        // string taken from user.
-        // fd1 = open(myfifo,O_WRONLY);
-        // fgets(str2, 80, stdin);
-        // write(fd1, str2, strlen(str2)+1);
-        // close(fd1);
-    }
+    // Read the contents of the FIFO file and save it in a character array.
+    read(fd1, binaryPayloadCharArray, MAX_FRAME_SIZE);
 
+    // Create a string object containing the received binary coded frame.
     string binaryPayload (binaryPayloadCharArray);
-    // cout << binaryPayload;
-    // free(binaryPayloadCharArray);
-    // return 0;
-    // cin >> binaryPayload;
+    free(binaryPayloadCharArray);
+
+    if (binaryPayload.length() < MIN_FRAME_SIZE) {
+        cout << "[ERROR] DATA LOSS ALERT!" << endl;
+        exit(EXIT_FAILURE);
+    }
+    // Create a FrameDecode object with the received frame.
     FrameDecode *frame = new FrameDecode(binaryPayload);
+
+    // Print the contents of the frame in human readable form.
     frame->printFrame(true);
+
+    // Garbage collection.
     delete frame;
+
     return 0;
 
 }
