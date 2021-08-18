@@ -1,10 +1,10 @@
 /*
-*---------------------------------------------------------------------------------------------------------------
+*---------------------------------------------------------------------------
 *	Author	: P Punyacharan, 18-August-2021
 *	Email	: punyacharan@gmail.com
 *	Licence	: GPL-2.0 License
-*	Purpose	: Header file containing declarations of the classes and methods to assist to decode the ethernet frame.
-*---------------------------------------------------------------------------------------------------------------
+*	Purpose	: Implementations of the methods declared in FrameDecoder.h
+*---------------------------------------------------------------------------
 */
 
 #include "FrameDecode.h"
